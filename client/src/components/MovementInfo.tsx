@@ -1,31 +1,30 @@
 import { Stack, Text } from "@chakra-ui/react";
 import { AtSignIcon, EditIcon } from "@chakra-ui/icons";
+import { RiEmotionHappyLine, RiEmotionUnhappyLine } from 'react-icons/ri'
 
 interface Movement {
   concept: string;
   date: string;
   amount: number;
   type: string;
+  modal: () => void;
+  stateManager: (obj: any) => void;
 }
 
-const MovementInfo: React.VFC<Movement> = ({ concept, date, amount, type }) => {
+const MovementInfo: React.VFC<Movement> = ({ concept, date, amount, type, modal, stateManager }) => {
   return (
     <Stack
       direction="row"
       justifyContent="space-between"
       alignItems="center"
       paddingX={1}
+      paddingY={1}
       backgroundColor={type}
       borderRadius="md"
+
     >
       <Stack direction="row" alignItems="center">
-        <AtSignIcon
-          w={6}
-          h={6}
-          backgroundColor="black"
-          color="black"
-          borderRadius="100"
-        />
+        {type === 'income' ? <RiEmotionHappyLine /> : <RiEmotionUnhappyLine />}
         <Stack alignItems="flex-start" spacing={0} justifyContent="flex-end">
           <Text fontSize={14}>{concept}</Text>
           <Text fontSize={10}> {date}</Text>
@@ -38,8 +37,17 @@ const MovementInfo: React.VFC<Movement> = ({ concept, date, amount, type }) => {
         paddingTop={2}
         justifyContent="flex-end"
       >
-        <EditIcon w={3} h={3} />
-        <Text fontSize={14}>{amount}</Text>
+        <EditIcon w={4} h={4} cursor="pointer" onClick={() => {
+          stateManager({
+            concept: concept,
+            date: date,
+            amount: amount,
+            type: type,
+          });
+          modal();
+        }} />
+        {amount > 0 ? <Text fontSize={14}>${amount}</Text> : <Text fontSize={14}>${amount * -1}</Text>}
+
       </Stack>
     </Stack>
   );
