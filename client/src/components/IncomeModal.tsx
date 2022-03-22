@@ -4,7 +4,7 @@ import {
 } from '@chakra-ui/react'
 
 import React, { useEffect, useState } from 'react'
-
+import axios from 'axios'
 
 interface Props {
   isOpen: boolean;
@@ -12,6 +12,16 @@ interface Props {
   onClose: () => void;
   item?: any,
   stateManager: (obj: any) => void;
+}
+
+const postMovement = async (state: any) => {
+  try {
+    await axios.post('http://localhost:3001/', state)
+    alert('exito!')
+  }
+  catch (error) {
+    alert(error)
+  }
 }
 
 
@@ -22,10 +32,11 @@ const IncomeModal: React.VFC<Props> = ({ isOpen, onOpen, onClose, item, stateMan
     concept: "",
     date: "",
     amount: 0,
+    type: "income",
   })
 
   useEffect(() => {
-    setModifiedMovement(item)
+    item.type ? setModifiedMovement(item) : null
   }, [isOpen])
 
   useEffect(() => {
@@ -54,6 +65,7 @@ const IncomeModal: React.VFC<Props> = ({ isOpen, onOpen, onClose, item, stateMan
           concept: "",
           date: "",
           amount: 0,
+          type: "income",
         })
         onClose();
       }} isCentered size="full" >
@@ -122,12 +134,17 @@ const IncomeModal: React.VFC<Props> = ({ isOpen, onOpen, onClose, item, stateMan
                 concept: "",
                 date: "",
                 amount: 0,
+                type: "income",
               })
               onClose();
             }}>
               Salir
             </Button>
-            <Button colorScheme='green' mr={3} onClick={onClose} type="submit" isDisabled={modifiedMovement.concept.length && modifiedMovement.date.length && modifiedMovement.amount ? false : true}>
+            <Button colorScheme='green' mr={3} onClick={() => {
+              postMovement(modifiedMovement);
+              onClose();
+            }} type="submit"
+              isDisabled={modifiedMovement.concept.length && modifiedMovement.date.length && modifiedMovement.amount ? false : true}>
               Guardar
             </Button>
           </ModalFooter>

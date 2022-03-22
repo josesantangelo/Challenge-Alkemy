@@ -4,7 +4,7 @@ import {
 } from '@chakra-ui/react'
 
 import React, { useEffect, useState } from 'react'
-
+import axios from 'axios'
 
 interface Props {
   isOpen: boolean;
@@ -14,6 +14,17 @@ interface Props {
   stateManager: (obj: any) => void;
 }
 
+
+const postMovement = async (state: any) => {
+  try {
+    await axios.post('http://localhost:3001/', state)
+    alert('exito!')
+  }
+  catch (error) {
+    alert(error)
+  }
+}
+
 const ExpenseModal: React.VFC<Props> = ({ isOpen, onOpen, onClose, item, stateManager }) => {
   let categorys: string[];
   categorys = ["Servicios", "Transporte", "Ocio", "Otros"]
@@ -21,10 +32,12 @@ const ExpenseModal: React.VFC<Props> = ({ isOpen, onOpen, onClose, item, stateMa
     concept: "",
     date: "",
     amount: 0,
+    type: "expense",
   })
 
   useEffect(() => {
-    setModifiedMovement(item)
+    console.log('item', item)
+    item.type ? setModifiedMovement(item) : null
   }, [isOpen])
 
   useEffect(() => {
@@ -50,6 +63,7 @@ const ExpenseModal: React.VFC<Props> = ({ isOpen, onOpen, onClose, item, stateMa
           concept: "",
           date: "",
           amount: 0,
+          type: "expense",
         })
         onClose();
       }} isCentered size="full" >
@@ -112,18 +126,22 @@ const ExpenseModal: React.VFC<Props> = ({ isOpen, onOpen, onClose, item, stateMa
                 concept: "",
                 date: "",
                 amount: 0,
-                type: "",
+                type: "expense",
               });
               setModifiedMovement({
                 concept: "",
                 date: "",
                 amount: 0,
+                type: "expense",
               })
               onClose();
             }}>
               Salir
             </Button>
-            <Button colorScheme='green' mr={3} onClick={onClose} type="submit" isDisabled={modifiedMovement.concept.length && modifiedMovement.date.length && modifiedMovement.amount ? false : true}>
+            <Button colorScheme='green' mr={3} onClick={() => {
+              postMovement(modifiedMovement);
+              onClose();
+            }} type="submit" isDisabled={modifiedMovement.concept.length && modifiedMovement.date.length && modifiedMovement.amount ? false : true}>
               Guardar
             </Button>
           </ModalFooter>

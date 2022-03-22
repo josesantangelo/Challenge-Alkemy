@@ -17,6 +17,9 @@ import IncomeModal from "./components/IncomeModal";
 import ExpenseModal from "./components/ExpenseModal";
 import MovementInfo from "./components/MovementInfo";
 function App() {
+
+
+  let limit: number = 3;
   const [visibleNumbers, setVisibleNumbers] = useState(false);
 
   const [originalInfo, setOriginalInfo] = useState([]);
@@ -49,8 +52,8 @@ function App() {
   } = useDisclosure();
 
   const getInfo = async () => {
-    const info = await axios.get("https://pacific-lowlands-66049.herokuapp.com/");
-    // const info = await axios.get("http://localhost:3001/");
+    // const info = await axios.get("https://pacific-lowlands-66049.herokuapp.com/");
+    const info = await axios.get("http://localhost:3001/");
     const data = info.data;
     setOriginalInfo(data);
     setVisibleInfo(data);
@@ -85,6 +88,11 @@ function App() {
   useEffect(() => {
     getInfo();
   }, []);
+
+  useEffect(() => {
+    getInfo();
+  }, [isOpenIncomeModal, isOpenExpenseModal]);
+
 
   useEffect(() => {
     calculateBalance(originalInfo)
@@ -224,7 +232,7 @@ function App() {
                 stateManager={setSelectedMovement}
               />
             );
-          })}
+          }).slice(0, 10)}
       </Stack> : <Stack justifyContent="center" paddingTop={10} alignItems="center"><Spinner color={"green.500"} size="xl" /> </Stack>}
 
 
